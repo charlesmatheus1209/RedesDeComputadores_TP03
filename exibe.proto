@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package exibe;
+
+service Exibe{
+  rpc exibe(Mensagem_Origem) returns (MessageResponse) {}
+  rpc termina (Vazio) returns (Vazio) {}
+}
+
+message Vazio {}
+
+message MessageResponse{
+ string messageResponse = 1;
+}
+
+message Mensagem_Origem{
+  string mensagem = 1;
+  string origem = 2;
+}

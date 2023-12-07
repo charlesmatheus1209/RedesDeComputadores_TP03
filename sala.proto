@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package sala;
+
+service Sala{
+  rpc envia(Mensagem_Destino) returns (MessageResponse) {}
+  rpc registra_entrada(Identificador) returns (NumeroResposta) {}
+  rpc registra_saida (RegistroDeSaida) returns (NumeroResposta) {}
+  rpc lista (Vazio) returns (ListaResposta) {}
+  rpc finaliza_registro (Vazio) returns (NumeroResposta) {}
+  rpc termina (Vazio) returns (Vazio) {}
+}
+
+message Vazio {}
+
+
+message MessageResponse{
+ string messageResponse = 1;
+}
+
+message Mensagem_Destino{
+  string mensagem = 1;
+  string destino = 2;
+}
+
+message Identificador{
+  string id = 1;
+}
+
+message NumeroResposta{
+  int32 resposta = 1;
+}
+
+message RegistroDeSaida{
+  string id = 1;
+  string fqdn = 2;
+  int32 port = 3;
+}
+
+message ListaResposta{
+  repeated string lista_de_resposta = 1;
+}
