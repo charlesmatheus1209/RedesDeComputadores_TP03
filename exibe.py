@@ -1,3 +1,4 @@
+import threading
 import grpc
 import sys
 from concurrent import futures
@@ -5,11 +6,13 @@ from concurrent import futures
 import exibe_pb2, exibe_pb2_grpc
 import sala_pb2, sala_pb2_grpc
 
+stopEvent = threading.Event()
+
 class ExibeService(exibe_pb2_grpc.ExibeServicer):    
             
     def termina(self, request, context):
         print("termina")
-        
+        stopEvent.set()
         return exibe_pb2.Vazio()
 
     def exibe(self, request, context):
@@ -42,7 +45,8 @@ def serve():
     exibe_pb2_grpc.add_ExibeServicer_to_server(ExibeService(), server)
     server.add_insecure_port('localhost:8889')
     server.start()
-    server.wait_for_termination()
+    stopEvent.wait()
+    server.stop(None)
     
 def registra_saida():
     print("registrando a saida")

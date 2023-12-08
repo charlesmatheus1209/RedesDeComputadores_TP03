@@ -3,7 +3,7 @@ syntax = "proto3";
 package sala;
 
 service Sala{
-  rpc envia(Mensagem_Destino) returns (MessageResponse) {}
+  rpc envia(Mensagem_Destino) returns (NumeroResposta) {}
   rpc registra_entrada(Identificador) returns (NumeroResposta) {}
   rpc registra_saida (RegistroDeSaida) returns (NumeroResposta) {}
   rpc lista (Vazio) returns (ListaResposta) {}
