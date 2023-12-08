@@ -18,7 +18,6 @@ class ExibeService(exibe_pb2_grpc.ExibeServicer):
         origem = request.origem
         result = f'Sou exibe  e recebi: "{message}" de origem: {origem}'
         print(result)
-
         return exibe_pb2.MessageResponse(messageResponse = "Recebido por Exibe")
 
 
