@@ -17,7 +17,7 @@ class SalaStub(object):
         self.envia = channel.unary_unary(
                 '/sala.Sala/envia',
                 request_serializer=sala__pb2.Mensagem_Destino.SerializeToString,
-                response_deserializer=sala__pb2.MessageResponse.FromString,
+                response_deserializer=sala__pb2.NumeroResposta.FromString,
                 )
         self.registra_entrada = channel.unary_unary(
                 '/sala.Sala/registra_entrada',
@@ -91,7 +91,7 @@ def add_SalaServicer_to_server(servicer, server):
             'envia': grpc.unary_unary_rpc_method_handler(
                     servicer.envia,
                     request_deserializer=sala__pb2.Mensagem_Destino.FromString,
-                    response_serializer=sala__pb2.MessageResponse.SerializeToString,
+                    response_serializer=sala__pb2.NumeroResposta.SerializeToString,
             ),
             'registra_entrada': grpc.unary_unary_rpc_method_handler(
                     servicer.registra_entrada,
@@ -141,7 +141,7 @@ class Sala(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/sala.Sala/envia',
             sala__pb2.Mensagem_Destino.SerializeToString,
-            sala__pb2.MessageResponse.FromString,
+            sala__pb2.NumeroResposta.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

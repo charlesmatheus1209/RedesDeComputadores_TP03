@@ -3,28 +3,13 @@ import grpc
 import sala_pb2, sala_pb2_grpc
 import sys
 
-porta = ""
-host = ""
-id = ""
-
-if(len(sys.argv) == 4):
-    print(sys.argv)
-    id = sys.argv[1]
-    host = sys.argv[2]
-    porta = sys.argv[3]
-    host_port = str(host + ":" + porta)
-    print(host_port)
-else:
-    print("Quantidade de parametros invalida")
-    sys.exit()
-
 
 def envia(msg, dest):
     channel = grpc.insecure_channel(host_port)
     stub = sala_pb2_grpc.SalaStub(channel)
     
     response = stub.envia(sala_pb2.Mensagem_Destino(mensagem=msg,destino=dest))
-    print("GRPC client received: " + response.messageResponse)
+    print("GRPC client received: " + str(response.resposta))
 
     channel.close()
     
@@ -66,7 +51,22 @@ def registra_entrada():
     response = stub.registra_entrada(sala_pb2.Identificador(id=id))
     print("registra_entrada -> Resposta: ", response.resposta)
     
-        
+porta = ""
+host = ""
+id = ""
+
+if(len(sys.argv) == 4):
+    print(sys.argv)
+    id = sys.argv[1]
+    host = sys.argv[2]
+    porta = sys.argv[3]
+    host_port = str(host + ":" + porta)
+    print(host_port)
+else:
+    print("Quantidade de parametros invalida")
+    sys.exit()
+
+   
 if __name__ == "__main__":
     registra_entrada()
     while(True):
@@ -85,6 +85,7 @@ if __name__ == "__main__":
             elif(comando == "F"):
                 print("Comando F")
                 finaliza_registro()
+                break
             elif(comando == "T"):
                 print("Comando T")
                 termina()
