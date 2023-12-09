@@ -29,7 +29,8 @@ def finaliza_registro():
     channel = grpc.insecure_channel(host_port)
     stub = sala_pb2_grpc.SalaStub(channel)
     
-    response = stub.finaliza_registro(sala_pb2.Vazio())
+    
+    response = stub.finaliza_registro(sala_pb2.Identificador(id=id))
     print(response)
 
     channel.close()
@@ -42,6 +43,7 @@ def termina():
     response = stub.termina(sala_pb2.Vazio())
 
     channel.close()
+    sys.exit()
     
 def registra_entrada():
     print("registrando a entrada")

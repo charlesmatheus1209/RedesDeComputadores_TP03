@@ -4,7 +4,7 @@ package exibe;
 
 service Exibe{
   rpc exibe(Mensagem_Origem) returns (MessageResponse) {}
-  rpc termina (Vazio) returns (Vazio) {}
+  rpc termina (Vazio) returns (NumeroResposta) {}
 }
 
 message Vazio {}
@@ -16,4 +16,8 @@ message MessageResponse{
 message Mensagem_Origem{
   string mensagem = 1;
   string origem = 2;
+}
+
+message NumeroResposta{
+  int32 resposta = 1;
 }

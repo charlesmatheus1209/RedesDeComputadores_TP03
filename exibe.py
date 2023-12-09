@@ -1,3 +1,4 @@
+import socket
 import threading
 import grpc
 import sys
@@ -13,14 +14,15 @@ class ExibeService(exibe_pb2_grpc.ExibeServicer):
     def termina(self, request, context):
         print("termina")
         stopEvent.set()
-        return exibe_pb2.Vazio()
+        return exibe_pb2.NumeroResposta(resposta=0)
 
     def exibe(self, request, context):
         # get the string from the incoming request
         message = request.mensagem
         origem = request.origem
-        result = f'Sou exibe  e recebi: "{message}" de origem: {origem}'
+        result = f'Mensagem de {origem}: {message}'
         print(result)
+
         return exibe_pb2.MessageResponse(messageResponse = "Recebido por Exibe")
 
 
@@ -42,7 +44,7 @@ else:
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     exibe_pb2_grpc.add_ExibeServicer_to_server(ExibeService(), server)
-    server.add_insecure_port('localhost:8889')
+    server.add_insecure_port('localhost:' + str(porta))
     server.start()
     stopEvent.wait()
     server.stop(None)
@@ -51,8 +53,10 @@ def registra_saida():
     print("registrando a saida")
     channel = grpc.insecure_channel(hostservidor + ":" + portaservidor)
     stub = sala_pb2_grpc.SalaStub(channel)
+    fqdn = socket.getfqdn()
+    print(fqdn)    
     
-    response = stub.registra_saida(sala_pb2.RegistroDeSaida(id=id, fqdn="localhost", port=8889))
+    response = stub.registra_saida(sala_pb2.RegistroDeSaida(id=id, fqdn=fqdn, port=int(porta)))
     print(response.resposta)
 
 

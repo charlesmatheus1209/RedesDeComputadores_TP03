@@ -22,7 +22,7 @@ class ExibeStub(object):
         self.termina = channel.unary_unary(
                 '/exibe.Exibe/termina',
                 request_serializer=exibe__pb2.Vazio.SerializeToString,
-                response_deserializer=exibe__pb2.Vazio.FromString,
+                response_deserializer=exibe__pb2.NumeroResposta.FromString,
                 )
 
 
@@ -52,7 +52,7 @@ def add_ExibeServicer_to_server(servicer, server):
             'termina': grpc.unary_unary_rpc_method_handler(
                     servicer.termina,
                     request_deserializer=exibe__pb2.Vazio.FromString,
-                    response_serializer=exibe__pb2.Vazio.SerializeToString,
+                    response_serializer=exibe__pb2.NumeroResposta.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -94,6 +94,6 @@ class Exibe(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/exibe.Exibe/termina',
             exibe__pb2.Vazio.SerializeToString,
-            exibe__pb2.Vazio.FromString,
+            exibe__pb2.NumeroResposta.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

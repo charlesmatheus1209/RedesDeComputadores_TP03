@@ -7,7 +7,7 @@ service Sala{
   rpc registra_entrada(Identificador) returns (NumeroResposta) {}
   rpc registra_saida (RegistroDeSaida) returns (NumeroResposta) {}
   rpc lista (Vazio) returns (ListaResposta) {}
-  rpc finaliza_registro (Vazio) returns (NumeroResposta) {}
+  rpc finaliza_registro (Identificador) returns (NumeroResposta) {}
   rpc termina (Vazio) returns (Vazio) {}
 }
 

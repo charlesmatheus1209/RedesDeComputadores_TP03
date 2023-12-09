@@ -1,11 +1,14 @@
+import socket
 import sys
 import threading
 import grpc
+import json
 from concurrent import futures
 
 import sala_pb2, sala_pb2_grpc
 import exibe_pb2, exibe_pb2_grpc
 
+ip_local = 0
     
 stopEvent = threading.Event()
 
@@ -34,6 +37,8 @@ class SalaService(sala_pb2_grpc.SalaServicer):
             print("Já existe esse exibidor")
             return sala_pb2.NumeroResposta(resposta = -1)
         else:
+            print(request.id, request.fqdn, request.port)
+            
             self.registros_de_saida_salvos.append((request.id, request.fqdn, request.port))
             print(self.registros_de_saida_salvos)
             return sala_pb2.NumeroResposta(resposta = len(self.registros_de_saida_salvos))
@@ -43,8 +48,27 @@ class SalaService(sala_pb2_grpc.SalaServicer):
         return sala_pb2.ListaResposta(lista_de_resposta = self.registros_de_entrada_salvos)
 
     def finaliza_registro(self, request, context):
-        print("finaliza_registro")
-        return sala_pb2.NumeroResposta(resposta = 0)
+        print(f"finaliza_registro: {request.id}")
+        if(request.id in self.registros_de_entrada_salvos):
+            print(f"Removendo:  {request.id}")
+            self.registros_de_entrada_salvos.remove(request.id)
+            i = 0
+            for index in range(len(self.registros_de_saida_salvos)):
+                if(self.registros_de_saida_salvos[index][0] == request.id):
+                    i += 1
+                    channel = grpc.insecure_channel("localhost:5555")
+                    stub = exibe_pb2_grpc.ExibeStub(channel)
+                    
+                    response = stub.termina(exibe_pb2.Vazio())
+
+                    channel.close()
+                    self.registros_de_saida_salvos.pop(index)
+            if i == 0:
+                return sala_pb2.NumeroResposta(resposta = 0)
+            else:
+                return sala_pb2.NumeroResposta(resposta = 1)
+        else:
+            return sala_pb2.NumeroResposta(resposta = -1)
         
     def termina(self, request, context):
         print("termina")
@@ -56,6 +80,7 @@ class SalaService(sala_pb2_grpc.SalaServicer):
             stub.termina(exibe_pb2.Vazio())
             
             channel.close()
+            self.registros_de_saida_salvos.pop(index)
         
         stopEvent.set()
         return sala_pb2.Vazio()
@@ -69,6 +94,7 @@ class SalaService(sala_pb2_grpc.SalaServicer):
         
         if(destino == "todos"):
             for index in range(len(self.registros_de_saida_salvos)):
+                print(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
                 channel = grpc.insecure_channel(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
                 stub = exibe_pb2_grpc.ExibeStub(channel)
                 
@@ -80,6 +106,7 @@ class SalaService(sala_pb2_grpc.SalaServicer):
         else:
             for index in range(len(self.registros_de_saida_salvos)):
                 if(self.registros_de_saida_salvos[index][0] == destino):
+                    print(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
                     channel = grpc.insecure_channel(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
                     stub = exibe_pb2_grpc.ExibeStub(channel)
                     
@@ -96,7 +123,7 @@ class SalaService(sala_pb2_grpc.SalaServicer):
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     sala_pb2_grpc.add_SalaServicer_to_server(SalaService(), server)
-    server.add_insecure_port('localhost:8888')
+    server.add_insecure_port('localhost:'+str(porta))
     server.start()
     stopEvent.wait()
     server.stop(None)
