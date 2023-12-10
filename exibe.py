@@ -12,7 +12,7 @@ stopEvent = threading.Event()
 class ExibeService(exibe_pb2_grpc.ExibeServicer):    
             
     def termina(self, request, context):
-        print("termina")
+        # print("termina")
         stopEvent.set()
         return exibe_pb2.NumeroResposta(resposta=0)
 
@@ -32,7 +32,7 @@ hostservidor = ""
 portaservidor = ""
 
 if(len(sys.argv) == 5):
-    print(sys.argv)
+    # print(sys.argv)
     id = sys.argv[1]
     porta = sys.argv[2]
     hostservidor = sys.argv[3]
@@ -50,11 +50,11 @@ def serve():
     server.stop(None)
     
 def registra_saida():
-    print("registrando a saida")
+    # print("registrando a saida")
     channel = grpc.insecure_channel(hostservidor + ":" + portaservidor)
     stub = sala_pb2_grpc.SalaStub(channel)
     fqdn = socket.getfqdn()
-    print(fqdn)    
+    # print(fqdn)    
     
     response = stub.registra_saida(sala_pb2.RegistroDeSaida(id=id, fqdn=fqdn, port=int(porta)))
     print(response.resposta)
