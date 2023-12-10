@@ -56,7 +56,7 @@ class SalaService(sala_pb2_grpc.SalaServicer):
             for index in range(len(self.registros_de_saida_salvos)):
                 if(self.registros_de_saida_salvos[index][0] == request.id):
                     i += 1
-                    channel = grpc.insecure_channel("localhost:5555")
+                    channel = grpc.insecure_channel(f"{self.registros_de_saida_salvos[index][1]}:{self.registros_de_saida_salvos[index][2]}")
                     stub = exibe_pb2_grpc.ExibeStub(channel)
                     
                     response = stub.termina(exibe_pb2.Vazio())
@@ -94,24 +94,24 @@ class SalaService(sala_pb2_grpc.SalaServicer):
         
         if(destino == "todos"):
             for index in range(len(self.registros_de_saida_salvos)):
-                print(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
-                channel = grpc.insecure_channel(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
-                stub = exibe_pb2_grpc.ExibeStub(channel)
+                # print(f"{self.registros_de_saida_salvos[index][1]}:{self.registros_de_saida_salvos[index][2]}")
+                channel = grpc.insecure_channel(f"{self.registros_de_saida_salvos[index][1]}:{self.registros_de_saida_salvos[index][2]}")
                 
-                response = stub.exibe(exibe_pb2.Mensagem_Origem(mensagem=message,origem=destino))
-                print("GRPC client received: " + response.messageResponse)
+                stub = exibe_pb2_grpc.ExibeStub(channel)
+                response = stub.exibe(exibe_pb2.Mensagem_Origem(mensagem=message,origem=str(socket.gethostbyname(socket.gethostname()))))
+                # print("GRPC client received: " + response.messageResponse)
 
                 channel.close()
                 numero_de_envios += 1
         else:
             for index in range(len(self.registros_de_saida_salvos)):
                 if(self.registros_de_saida_salvos[index][0] == destino):
-                    print(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
-                    channel = grpc.insecure_channel(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
+                    # print(self.registros_de_saida_salvos[index][1] + ":" + str(self.registros_de_saida_salvos[index][2]))
+                    channel = grpc.insecure_channel(f"{self.registros_de_saida_salvos[index][1]}:{self.registros_de_saida_salvos[index][2]}")
                     stub = exibe_pb2_grpc.ExibeStub(channel)
                     
-                    response = stub.exibe(exibe_pb2.Mensagem_Origem(mensagem=message,origem=destino))
-                    print("GRPC client received: " + response.messageResponse)
+                    response = stub.exibe(exibe_pb2.Mensagem_Origem(mensagem=message,origem=str(socket.gethostbyname(socket.gethostname()))))
+                    # print("GRPC client received: " + response.messageResponse)
 
                     channel.close()
                     numero_de_envios += 1

@@ -44,7 +44,7 @@ else:
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     exibe_pb2_grpc.add_ExibeServicer_to_server(ExibeService(), server)
-    server.add_insecure_port('localhost:' + str(porta))
+    server.add_insecure_port(socket.getfqdn() + ':' + str(porta))
     server.start()
     stopEvent.wait()
     server.stop(None)
